@@ -50,6 +50,7 @@ def get_fits(b64str):
    return pyfits.open(fitsData)
 
 # draw a line centered at ra,dec of a given length at a given angle
+# theta,ra,dec => deg; length => arcmin
 def draw_line(plot, theta, length, ra, dec, color='b', linewidth=1, alpha=0.7):
    theta = theta*np.pi/180.0
    length = length/2.0
@@ -60,6 +61,7 @@ def draw_line(plot, theta, length, ra, dec, color='b', linewidth=1, alpha=0.7):
    return plot
 
 # draw a box centered at ra,dec of a given length and width at a given angle
+# theta,ra,dec => deg; width, height => arcmin
 def draw_box(plot, theta, width, length, ra, dec, color='b', linewidth=1, alpha=0.7):
    theta = theta*np.pi/180.0
    length = length/2.0
@@ -78,35 +80,30 @@ def draw_box(plot, theta, width, length, ra, dec, color='b', linewidth=1, alpha=
    return plot
 
 # draw slits and reference boxes for MOS
-def mos_plot(plot, slits, refs):
+def mos_plot(plot, slits, refs, pa):
    # draw the slits
-   slit_ra = []
-   slit_dec = []
-   slit_width = []
-   slit_length = []
    for slit in slits:
-      slit_ra.append(float(slit.attributes['xce'].value))
-      slit_dec.append(float(slit.attributes['yce'].value))
-      slit_width.append(float(slit.attributes['width'].value)/3600.0)
-      slit_length.append(float(slit.attributes['length'].value)/3600.0)
-      
-   plot.show_rectangles(slit_ra, slit_dec, slit_width, slit_length, edgecolor='r', alpha=0.7)
+      draw_box(plot, 
+               pa,
+               float(slit.attributes['width'].value)/60.0,
+               float(slit.attributes['length'].value)/60.0,
+               float(slit.attributes['xce'].value),
+               float(slit.attributes['yce'].value),
+               color='r')
    # make bigger boxes around the reference objects
-   ref_ra = []
-   ref_dec = []
-   ref_width = []
-   ref_height = []
    for ref in refs:
-      ref_ra.append(float(ref.attributes['xce'].value))
-      ref_dec.append(float(ref.attributes['yce'].value))
-      ref_width.append(5.0/3600.0)
-      ref_height.append(5.0/3600.0)
-   if len(ref_ra) > 0:
-      plot.show_rectangles(ref_ra, ref_dec, ref_width, ref_height, edgecolor=(1,1,0), linewidth=2, alpha=0.7)
+      draw_box(plot, 
+               pa,
+               5.0/60.0,
+               5.0/60.0,
+               float(ref.attributes['xce'].value),
+               float(ref.attributes['yce'].value),
+               color=(1,1,0),
+               linewidth=2)
    return plot
 
 # set up basic plot
-def init_plot(hdu, imserver, title, ra, dec):
+def init_plot(hdu, imserver, title, ra, dec, pa):
    servname = {}
    servname['poss2ukstu_red'] = "POSS2/UKSTU Red"
    servname['poss2ukstu_blue'] = "POSS2/UKSTU Blue"
@@ -121,6 +118,8 @@ def init_plot(hdu, imserver, title, ra, dec):
    plot.set_theme('publication')
    sys.stdout = out
    
+   plot.add_label(0.95, -0.05, "PA = %.1f" % pa, relative=True, style='italic', weight='bold')
+
    plot.add_label(0.5, 1.03,
                   title,
                   relative=True, style='italic', weight='bold', size='large')

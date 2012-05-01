@@ -87,18 +87,16 @@ if form.has_key("fits"):
 else:
    hdu = finder.get_dss(imserver, ra, dec)
 
-plot = finder.init_plot(hdu, imserver, title, ra, dec)
+plot = finder.init_plot(hdu, imserver, title, ra, dec, pa)
 
 if mode == "mos":
-   plot = finder.mos_plot(plot, slits, refs)
+   plot = finder.mos_plot(plot, slits, refs, pa)
 
 if mode == "ls":
    plot = finder.draw_line(plot, pa, 8.0, ra, dec, color='r', linewidth=3, alpha=0.5)
-   plot.add_label(0.95, -0.05, "PA = %.1f" % pa, relative=True, style='italic', weight='bold')
 
 if mode == "slot":
    plot = finder.draw_box(plot, pa+90, 2.0/6.0, 10.0, ra, dec, color='r', linewidth=2, alpha=0.5)
-   plot.add_label(0.95, -0.05, "PA = %.1f" % pa, relative=True, style='italic', weight='bold')
 
 plotData = cStringIO.StringIO()
 plot.save(plotData, format=output)
