@@ -17,9 +17,9 @@ import numpy as np
 cgitb.enable()
 
 # stupid matplotlib requires a home dir somewhere.....
-mpl_homedir = '/tmp/pysalt/matplotlib/'
+mpl_homedir = '/tmp/pysalt_matplotlib/'
 if not os.path.exists(mpl_homedir):
-    os.mkdirs(mpl_homedir)
+    os.mkdir(mpl_homedir)
 os.environ['HOME'] = mpl_homedir
 
 import matplotlib
