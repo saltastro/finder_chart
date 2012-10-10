@@ -130,6 +130,7 @@ def init_plot(hdu, imserver, title, ra, dec, pa):
    plot.grid.set_color('b')
 
    plot.show_circles([ra, ra], [dec, dec], [4.0/60.0, 5.0/60.0], edgecolor='g')
+   plot.show_rectangles([ra], [dec], [4.9/60.0], [4.9/60], edgecolor='g')
    plot.add_label(0.79,
                   0.79,
                   "RSS",
@@ -148,6 +149,15 @@ def init_plot(hdu, imserver, title, ra, dec, pa):
                   size='large',
                   horizontalalignment='left',
                   color=(0,0,1))
+   plot.add_label(0.75,
+                  0.5,
+                  "BCAM",
+                  relative=True,
+                  style='italic',
+                  weight='bold',
+                  size='large',
+                  horizontalalignment='left',
+                  color=(0,0,1))                  
    plot.add_label(ra,
                   dec+4.8/60.0,
                   "N",
