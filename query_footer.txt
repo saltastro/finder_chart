@@ -1,0 +1,9 @@
+			OR
+  			TimeRestricted.ObsWindowStart is NULL) ORDER
+  			BY Pointing.Block_Id, Pointing.SubBlock_Order,
+  			Pointing.SubSubBlock_Order,
+  			Observation.Pointing_Id,
+  			Observation.Observation_Order,
+  			TelescopeConfig.TelescopeConfig_Order,
+  			SalticamPatternDetail.SalticamPattern_Order,
+			RssPatternDetail.RssPattern_Order
