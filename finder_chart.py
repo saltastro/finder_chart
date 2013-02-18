@@ -130,7 +130,7 @@ def init_plot(hdu, imserver, title, ra, dec, pa):
    plot.grid.set_color('b')
 
    plot.show_circles([ra, ra], [dec, dec], [4.0/60.0, 5.0/60.0], edgecolor='g')
-   plot.show_rectangles([ra], [dec], [4.9/60.0], [4.9/60], edgecolor='g')
+   draw_box(plot, 0.0, 4.9, 4.9, ra, dec, color='g')
    plot.add_label(0.79,
                   0.79,
                   "RSS",
