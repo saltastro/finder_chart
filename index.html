@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SALT Finder Chart Generator</title> 
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+    <script type="text/javascript">
+        function mos() {
+            document.getElementById("mos_code").style.display="";
+            document.getElementById("propid").style.display="none";
+            document.getElementById("pi_name").style.display="none";
+            document.getElementById("object").style.display="none";
+            document.getElementById("ra").style.display="none";
+            document.getElementById("dec").style.display="none";
+            document.getElementById("pa").style.display="none";
+        }
+
+        function ls() {
+            document.getElementById("mos_code").style.display="none";
+            document.getElementById("propid").style.display="";
+            document.getElementById("pi_name").style.display="";
+            document.getElementById("object").style.display="";
+            document.getElementById("ra").style.display="";
+            document.getElementById("dec").style.display="";
+            document.getElementById("pa").style.display="";
+        }
+    </script>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap.file-input.js"></script>
+  </head>
+
+  <body>
+  <form id='form' action="http://pysalt.salt.ac.za/cgi-bin/finder_chart.cgi" 
+	method="post" enctype="multipart/form-data" 
+	class="form-horizontal">
+    <div class="control-group">
+	<label class="control-label"><b>Mode:</b></label>
+	<div class="controls">
+	  <label class="checkbox inline">
+	    <input type="radio" name="mode" value="mos" 
+		   checked="yes" onclick="mos()" /> MOS
+	  </label>
+	  <label class="checkbox inline">
+	    <input type="radio" name="mode" value="ls" 
+		   onclick="ls()" /> LS
+	  </label>
+	  <label class="checkbox inline">
+	    <input type="radio" name="mode" value="slot" 
+		   onclick="ls()" /> Slot
+	  </label>
+	  <label class="checkbox inline">
+	    <input type="radio" name="mode" value="im" 
+		   onclick="ls()" /> Imaging
+	  </label>
+	</div>
+    </div>
+    <div class="control-group" id="mos_code">
+        <label class="control-label"><b>Mask XML Upload:</b></label>
+	<div class="controls">
+	  <input type="file" name="xml"/>
+	</div>
+    </div>
+    <div class="control-group"  id="propid" style="display:none"> 
+      <label class="control-label" for="prop"><b>Proposal ID:</b></label>
+      <div class="controls">
+	<input type="text" name="prop" value="" 
+	       placeholder="2012-2-XXX-XXX"
+	       title="Ex.: 2012-2-RSA-001"
+	       pattern="\d{4}\-\d{1}\-[a-zA-Z_]{1,}\-\d{3}"/>
+      </div>
+    </div> 
+    <div class="control-group" id="pi_name" style="display:none"> 
+      <label class="control-label" for="pi"><b>PI:</b></label> 
+      <div class="controls">
+	<input type="text" name="pi" value="" 
+	       placeholder=""/>
+      </div> 
+    </div> 
+    <div class="control-group"  id="object" style="display:none">
+      <label class="control-label" for="objname"><b>Object:</b></label>
+      <div class="controls">
+	<input type="text" name="objname" value="" 
+	       placeholder=""/> 
+      </div>
+    </div>
+    <div class="control-group"  id="ra" style="display:none"> 
+      <label class="control-label" for="rs"><b>RA (J2000):</b></label> 
+      <div class="controls">
+	<input type="text" name="ra" 
+	       placeholder="hh:mm:ss.s"
+	       title="Ex.: 12:34:56.7"
+	       pattern="\d{1,2}:\d{2}:\d{2}(\.\d{1,})?"/>
+      </div>
+    </div>
+    <div class="control-group"  id="dec" style="display:none">
+      <label class="control-label" for="dec"><b>Dec (J2000):</b></label>
+      <div class="controls">
+	<input type="text" name="dec" 
+	       placeholder="&plusmn;dd:mm:ss.s"
+	       title="Ex.: -56:43:21.0"
+	       pattern="[\-\+]?\d{1,2}:\d{2}:\d{2}(\.\d{1,})?"/>
+      </div>
+    </div>
+    <div class="control-group"  id="pa" style="display:none">
+      <label class="control-label" for="pa"><b>PA:</b></label>
+      <div class="controls">
+	<input type="number" name="pa" min="-180.0" max="180.0" step="0.5" value="0.0"/>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label"><b>Output:</b></label>
+      <div class="controls">
+	<label class="checkbox inline">
+	  <input type="radio" name="output" value="svg" /> SVG
+	</label>
+	<label class="checkbox inline">
+	  <input type="radio" name="output" value="png" /> PNG
+	</label>
+	<label class="checkbox inline">
+	  <input type="radio" name="output" value="pdf" checked="yes"/> PDF
+	</label>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label"><b>Image Server:</b></label>
+      <div class="controls">
+	<select name="image">
+	  <option value="poss2ukstu_red">POSS2/UKSTU Red</option>
+	  <option value="poss2ukstu_blue">POSS2/UKSTU Blue</option>
+	  <option value="poss2ukstu_ir">POSS2/UKSTU IR</option>
+	  <option value="poss1_red">POSS1 Red</option>
+	  <option value="poss1_blue">POSS1 Blue</option>
+	</select>
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls">
+	<button type="submit" class="btn btn-large 
+				     btn-primary">Submit</button>
+
+      </div>
+    </div>
+  </form>
+
+  </body>
+</html>
