@@ -52,30 +52,30 @@ def get_fits(b64str):
 # draw a line centered at ra,dec of a given length at a given angle
 # theta,ra,dec => deg; length => arcmin
 def draw_line(plot, theta, length, ra, dec, color='b', linewidth=1, alpha=0.7):
-   theta = theta*np.pi/180.0
-   length = length/2.0
-   dx = np.sin(theta)*length/(np.cos(dec*np.pi/180.0)*60.0)
-   dy = np.cos(theta)*length/60.0
-   coords = np.array([[ra+dx, ra-dx], [dec+dy, dec-dy]])
+   theta = theta * np.pi / 180.0
+   length = length / 2.0
+   dx = np.sin(theta) * length / (np.cos(dec * np.pi / 180.0) * 60.0)
+   dy = np.cos(theta) * length / 60.0
+   coords = np.array([[ra + dx, ra - dx], [dec + dy, dec - dy]])
    plot.show_lines([coords], color=color, linewidth=linewidth, alpha=alpha)
    return plot
 
 # draw a box centered at ra,dec of a given length and width at a given angle
 # theta,ra,dec => deg; width, height => arcmin
 def draw_box(plot, theta, width, length, ra, dec, color='b', linewidth=1, alpha=0.7):
-   theta = theta*np.pi/180.0
-   length = length/2.0
-   width = width/2.0
+   theta = theta * np.pi / 180.0
+   length = length / 2.0
+   width = width / 2.0
    # position of line centers
-   ra_l = ra + np.cos(theta)*width/(np.cos(dec*np.pi/180.0)*60.0)
-   ra_r = ra - np.cos(theta)*width/(np.cos(dec*np.pi/180.0)*60.0)
-   dec_l = dec - np.sin(theta)*width/60.0
-   dec_r = dec + np.sin(theta)*width/60.0
+   ra_l = ra + np.cos(theta) * width / (np.cos(dec * np.pi / 180.0) * 60.0)
+   ra_r = ra - np.cos(theta) * width / (np.cos(dec * np.pi / 180.0) * 60.0)
+   dec_l = dec - np.sin(theta) * width / 60.0
+   dec_r = dec + np.sin(theta) * width / 60.0
 
-   dx = np.sin(theta)*length/(np.cos(dec*np.pi/180.0)*60.0)
-   dy = np.cos(theta)*length/60.0
-   coords = np.array([[ra_l, ra_l+dx, ra_r+dx, ra_r-dx, ra_l-dx, ra_l], 
-                      [dec_l, dec_l+dy, dec_r+dy, dec_r-dy, dec_l-dy, dec_l]])
+   dx = np.sin(theta) * length / (np.cos(dec * np.pi / 180.0) * 60.0)
+   dy = np.cos(theta) * length / 60.0
+   coords = np.array([[ra_l, ra_l + dx, ra_r + dx, ra_r - dx, ra_l - dx, ra_l], 
+                      [dec_l, dec_l + dy, dec_r + dy, dec_r - dy, dec_l - dy, dec_l]])
    plot.show_lines([coords], color=color, linewidth=linewidth, alpha=alpha)
    return plot
 
@@ -83,10 +83,14 @@ def draw_box(plot, theta, width, length, ra, dec, color='b', linewidth=1, alpha=
 def mos_plot(plot, slits, refs, pa):
    # draw the slits
    for slit in slits:
+      if slit.attributes.has_key('tilt'):
+         tilt = float(slit.attributes['tilt'].value)
+      else:
+         tilt = 0.0
       draw_box(plot, 
-               pa,
-               float(slit.attributes['width'].value)/60.0,
-               float(slit.attributes['length'].value)/60.0,
+               pa + tilt,
+               float(slit.attributes['width'].value) / 60.0,
+               float(slit.attributes['length'].value) / 60.0,
                float(slit.attributes['xce'].value),
                float(slit.attributes['yce'].value),
                color='r')
@@ -94,11 +98,11 @@ def mos_plot(plot, slits, refs, pa):
    for ref in refs:
       draw_box(plot, 
                pa,
-               5.0/60.0,
-               5.0/60.0,
+               5.0 / 60.0,
+               5.0 / 60.0,
                float(ref.attributes['xce'].value),
                float(ref.attributes['yce'].value),
-               color=(1,1,0),
+               color=(1, 1, 0),
                linewidth=2)
    return plot
 
@@ -129,7 +133,7 @@ def init_plot(hdu, imserver, title, ra, dec, pa):
    plot.grid.set_alpha(0.2)
    plot.grid.set_color('b')
 
-   plot.show_circles([ra, ra], [dec, dec], [4.0/60.0, 5.0/60.0], edgecolor='g')
+   plot.show_circles([ra, ra], [dec, dec], [4.0 / 60.0, 5.0 / 60.0], edgecolor='g')
    draw_box(plot, 0.0, 4.9, 4.9, ra, dec, color='g')
    plot.add_label(0.79,
                   0.79,
@@ -159,20 +163,20 @@ def init_plot(hdu, imserver, title, ra, dec, pa):
                   horizontalalignment='left',
                   color=(0,0,1))                  
    plot.add_label(ra,
-                  dec+4.8/60.0,
+                  dec + 4.8 / 60.0,
                   "N",
                   style='italic',
                   weight='bold',
                   size='large',
                   color=(0,0.5,1))
-   plot.add_label(ra+4.8/(np.abs(np.cos(dec*np.pi/180.0))*60),
+   plot.add_label(ra +4.8 / (np.abs(np.cos(dec * np.pi / 180.0)) * 60),
                   dec,
                   "E",
                   style='italic',
                   weight='bold',
                   size='large',
                   horizontalalignment='right',
-                  color=(0,0.5,1))
+                  color=(0, 0.5, 1))
    plot = draw_line(plot, 0, 8, ra, dec, color='g', linewidth=0.5, alpha=1.0)
    plot = draw_line(plot, 90, 8, ra, dec, color='g', linewidth=0.5, alpha=1.0)
    return plot
