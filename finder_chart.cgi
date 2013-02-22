@@ -30,6 +30,7 @@ import finder_chart as finder
 
 form = cgi.FieldStorage()
 
+
 def generate_finder_chart():
 
     # get parameters from web form
@@ -38,7 +39,7 @@ def generate_finder_chart():
     output = form.getvalue("output")
 
     if mode == "mos":
-        if form.has_key("xml"):
+        if "xml" in form:
             fileitem = form["xml"]
             mask_xml = fileitem.file.read()
             doc = xml.dom.minidom.parseString(mask_xml)
@@ -73,7 +74,7 @@ def generate_finder_chart():
         pa = float(form.getvalue("pa"))
         title = "%s (%s; %s)" % (obj, propid, pi_name)
 
-    if form.has_key("fits"):
+    if "fits" in form:
         hdu = finder.get_fits(form["fits"].value)
     else:
         hdu = finder.get_dss(imserver, ra, dec)
@@ -84,10 +85,12 @@ def generate_finder_chart():
         plot = finder.mos_plot(plot, slits, refs, pa)
 
     if mode == "ls":
-        plot = finder.draw_line(plot, pa, 8.0, ra, dec, color='r', linewidth=3, alpha=0.5)
+        plot = finder.draw_line(plot, pa, 8.0, ra, dec, color='r',
+                                linewidth=3, alpha=0.5)
 
     if mode == "slot":
-        plot = finder.draw_box(plot, pa+90, 2.0/6.0, 10.0, ra, dec, color='r', linewidth=2, alpha=0.5)
+        plot = finder.draw_box(plot, pa+90, 2.0/6.0, 10.0, ra, dec, color='r',
+                               linewidth=2, alpha=0.5)
 
     plotData = cStringIO.StringIO()
     plot.save(plotData, format=output)
@@ -100,7 +103,8 @@ def generate_finder_chart():
     print "Content-Type: %s" % mime
     #if output != 'png':
     if mode == "mos":
-        print "Content-Disposition: attachment; filename=%s.%s" % (barcode, output)
+        print "Content-Disposition: attachment; filename=%s.%s" % \
+            (barcode, output)
     else:
         print "Content-Disposition: attachment; filename=%s.%s" % (obj, output)
     print ""
