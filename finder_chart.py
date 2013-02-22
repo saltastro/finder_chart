@@ -94,10 +94,9 @@ def draw_box(plot, theta, width, length, ra, dec,
 def mos_plot(plot, slits, refs, pa):
     # draw the slits
     for slit in slits:
-        if 'tilt' in slit.attributes:
+        tilt = 0.0
+        if slit.attributes.has_key('tilt'):
             tilt = float(slit.attributes['tilt'].value)
-        else:
-            tilt = 0.0
         draw_box(plot,
                  pa + tilt,
                  float(slit.attributes['width'].value) / 60.0,

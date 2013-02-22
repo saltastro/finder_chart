@@ -119,6 +119,7 @@ except Exception, e:
     print "Content-Type: text/plain"
     print ""
     print "<PRE>"
+    print "Exception: %s" % e
     print "Prop ID: %s" % form["prop"]
     print "PI: %s" % form["pi"]
     print "Object: %s" % form["objname"]
