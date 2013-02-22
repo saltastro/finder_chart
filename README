@@ -1,0 +1,8 @@
+current online URL is:
+
+http://pysalt.salt.ac.za/finder_chart/
+
+can also be used directly from the command-line via curl (or similar), e.g.:
+
+http://pysalt.salt.ac.za/finder_chart/finder_chart.cgi?mode=ls&prop=CAL_SPST&pi=SA&objname=EG21&ra=03:10:31.0&dec=-68:36:02.2&pa=0.0&output=pdf&image=poss2ukstu_red
+
