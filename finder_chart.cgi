@@ -87,10 +87,32 @@ def generate_finder_chart():
     if mode == "ls":
         plot = finder.draw_line(plot, pa, 8.0, ra, dec, color='r',
                                 linewidth=3, alpha=0.5)
+        plot = finder.draw_box(plot, 0.0, 4.9, 4.9, ra, dec, color='g')
+        plot.add_label(0.75,
+                       0.5,
+                       "BCAM",
+                       relative=True,
+                       style='italic',
+                       weight='bold',
+                       size='large',
+                       horizontalalignment='left',
+                       color=(0, 0, 1))
 
     if mode == "slot":
         plot = finder.draw_box(plot, pa+90, 2.0/6.0, 10.0, ra, dec, color='r',
                                linewidth=2, alpha=0.5)
+
+    if mode == "imaging":
+        plot.show_circles([ra], [dec], [1.7/60.0], edgecolor='g')
+        plot.add_label(0.5,
+                       0.5,
+                       "BVIT",
+                       relative=True,
+                       style='italic',
+                       weight='bold',
+                       size='large',
+                       horizontalalignment='left',
+                       color=(0, 0, 1))
 
     plotData = cStringIO.StringIO()
     plot.save(plotData, format=output)
