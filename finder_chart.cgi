@@ -87,7 +87,7 @@ def generate_finder_chart():
     if mode == "ls":
         plot = finder.draw_line(plot, pa, 8.0, ra, dec, color='r',
                                 linewidth=3, alpha=0.5)
-        plot = finder.draw_box(plot, 0.0, 4.9, 4.9, ra, dec, color='g')
+        plot = finder.draw_box(plot, pa, 4.9, 4.9, ra, dec, color='g')
         plot.add_label(0.75,
                        0.5,
                        "BCAM",
@@ -103,9 +103,9 @@ def generate_finder_chart():
                                linewidth=2, alpha=0.5)
 
     if mode == "im":
-        plot.show_circles([ra], [dec], [1.7/60.0], edgecolor='r')
-        plot.add_label(0.63,
-                       0.63,
+        plot.show_circles([ra], [dec], [0.8/60.0], edgecolor='r')
+        plot.add_label(0.57,
+                       0.57,
                        "BVIT",
                        relative=True,
                        style='italic',
