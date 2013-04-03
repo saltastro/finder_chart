@@ -102,7 +102,7 @@ def generate_finder_chart():
         plot = finder.draw_box(plot, pa+90, 2.0/6.0, 10.0, ra, dec, color='r',
                                linewidth=2, alpha=0.5)
 
-    if mode == "imaging":
+    if mode == "im":
         plot.show_circles([ra], [dec], [1.7/60.0], edgecolor='g')
         plot.add_label(0.5,
                        0.5,
