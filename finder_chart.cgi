@@ -103,9 +103,9 @@ def generate_finder_chart():
                                linewidth=2, alpha=0.5)
 
     if mode == "im":
-        plot.show_circles([ra], [dec], [1.7/60.0], edgecolor='g')
-        plot.add_label(0.5,
-                       0.5,
+        plot.show_circles([ra], [dec], [1.7/60.0], edgecolor='r')
+        plot.add_label(0.63,
+                       0.63,
                        "BVIT",
                        relative=True,
                        style='italic',
