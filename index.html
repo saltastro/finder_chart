@@ -8,23 +8,42 @@
     <script type="text/javascript">
         function mos() {
             document.getElementById("mos_code").style.display="";
+            document.getElementById("ephem_file").style.display="none";
             document.getElementById("propid").style.display="none";
             document.getElementById("pi_name").style.display="none";
             document.getElementById("object").style.display="none";
             document.getElementById("ra").style.display="none";
             document.getElementById("dec").style.display="none";
             document.getElementById("pa").style.display="none";
+            document.getElementById("start_time").style.display="none";
+            document.getElementById("end_time").style.display="none";
         }
 
         function ls() {
             document.getElementById("mos_code").style.display="none";
+            document.getElementById("ephem_file").style.display="none";
             document.getElementById("propid").style.display="";
             document.getElementById("pi_name").style.display="";
             document.getElementById("object").style.display="";
             document.getElementById("ra").style.display="";
             document.getElementById("dec").style.display="";
             document.getElementById("pa").style.display="";
+            document.getElementById("start_time").style.display="none";
+            document.getElementById("end_time").style.display="none";
         }
+        
+        function ns() {
+            document.getElementById("mos_code").style.display="none";
+            document.getElementById("ephem_file").style.display="";
+            document.getElementById("propid").style.display="";
+            document.getElementById("pi_name").style.display="";
+            document.getElementById("object").style.display="";
+            document.getElementById("ra").style.display="none";
+            document.getElementById("dec").style.display="none";
+            document.getElementById("pa").style.display="";
+            document.getElementById("start_time").style.display="";
+            document.getElementById("end_time").style.display="";
+            }
     </script>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -54,6 +73,10 @@
 	    <input type="radio" name="mode" value="im" 
 		   onclick="ls()" /> Imaging
 	  </label>
+	  <label class="checkbox inline">
+	  <input type="radio" name="mode" value="ns" 
+            onclick="ns()" /> Non-sidereal
+	  </label>
 	</div>
     </div>
     <div class="control-group" id="mos_code">
@@ -61,6 +84,12 @@
 	<div class="controls">
 	  <input type="file" name="xml"/>
 	</div>
+    </div>
+    <div class="control-group" id="ephem_file">
+    <label class="control-label"><b>Ephem file Upload:</b></label>
+    <div class="controls">
+    <input type="file" name="txt"/>
+    </div>
     </div>
     <div class="control-group"  id="propid" style="display:none"> 
       <label class="control-label" for="prop"><b>Proposal ID:</b></label>
@@ -108,6 +137,20 @@
       <div class="controls">
 	<input type="number" name="pa" min="-180.0" max="180.0" step="0.5" value="0.0"/>
       </div>
+    </div>
+    <div class="control-group"  id="start_time" style="display:none">
+    <label class="control-label" for="pa"><b>Start date/time:</b></label>
+    <div class="controls">
+    <input type="test" name="start_time" 
+           placeholder="yyyy-mm-ssThh:mm" />
+    </div>
+    </div>
+    <div class="control-group"  id="end_time" style="display:none">
+    <label class="control-label" for="pa"><b>End date/time:</b></label>
+    <div class="controls">
+    <input type="test" name="end_time" 
+           placeholder="yyyy-mm-ssThh:mm" />
+    </div>
     </div>
     <div class="control-group">
       <label class="control-label"><b>Output:</b></label>

@@ -1,16 +1,16 @@
-#!/opt/local/bin/python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import cStringIO
-import os
 import sys
 import xml
 import base64
 import urllib2
 import xml.dom.minidom
 import pyfits
-import ephem
 import numpy as np
 import aplpy
+import time
 
 
 # grab MOS xml definition from WM given account and barcode
@@ -95,7 +95,7 @@ def mos_plot(plot, slits, refs, pa):
     # draw the slits
     for slit in slits:
         tilt = 0.0
-        if slit.attributes.has_key('tilt'):
+        if 'tilt' in slit.attributes:
             tilt = float(slit.attributes['tilt'].value)
         draw_box(plot,
                  pa + tilt,
@@ -117,6 +117,127 @@ def mos_plot(plot, slits, refs, pa):
     return plot
 
 
+# read in an ephem file for non-siderial targets
+# the start and end times to be plotted are required
+def read_ephem(ephemfilename, startTime, endTime):
+    ephData = np.loadtxt(ephemfilename,
+                         dtype=({'names': ('times',
+                                           'RAhr',
+                                           'RAmin',
+                                           'RAsec',
+                                           'Decdeg',
+                                           'Decmin',
+                                           'Decsec',
+                                           'RaRate',
+                                           'DecRate'),
+                                 'formats': ('S100',
+                                             np.float,
+                                             np.float,
+                                             np.float,
+                                             np.float,
+                                             np.float,
+                                             np.float,
+                                             np.float,
+                                             np.float)}),
+                         delimiter=' ',
+                         skiprows=2)
+
+    times = []
+    for i in ephData:
+        times.append(time.mktime(time.strptime(i['times'],
+                                               '%Y-%m-%dT%H:%M:%S')))
+
+    times = np.array(times)
+
+    req_startTime = time.mktime(time.strptime(startTime,
+                                              '%Y-%m-%dT%H:%M:%S'))
+    req_endTime = time.mktime(time.strptime(endTime,
+                                            '%Y-%m-%dT%H:%M:%S'))
+    # get back the indeces where the time conditions are met
+    req_i = np.where((times >= req_startTime) & (times <= req_endTime))
+
+    # create array with the RA and DEC in degrees from the time restriction
+    RA =  ephData[req_i]['RAhr'] * 15.0 +\
+          ephData[req_i]['RAmin'] / 60.0 +\
+          ephData[req_i]['RAsec'] / 3600.0
+    DEC = ephData[req_i]['Decdeg'] +\
+          ephData[req_i]['Decmin'] / 60.0 +\
+          ephData[req_i]['Decsec'] / 3600.0
+
+    # calculate the mean RA/DEC, this will be the centre of the finder chart
+    mean_RA = np.mean(RA)
+    mean_DEC = np.mean(DEC)
+
+    return mean_RA, mean_DEC, RA, DEC
+
+
+# plot the object positions as a function of time from the ephem file
+def plot_ephem(plot, RA_pos, DEC_pos, startTime, endTime):
+    # plot the object positions
+    plot.show_markers(RA_pos,
+                      DEC_pos,
+                      layer='object_path_markers',
+                      edgecolor='red',
+                      facecolor='none',
+                      marker='o',
+                      s=12,
+                      linestyle='solid')
+
+    # plot the lines that connect the markers
+    lv = np.vstack([RA_pos, DEC_pos])
+    plot.show_lines([lv],
+                    layer='object_path_lines',
+                    edgecolor='red',
+                    linestyle='solid')
+
+    dra = RA_pos[-1] - RA_pos[-2]
+    ddec = DEC_pos[-1] - DEC_pos[-2]
+
+    # plot the arrow at the start time to show direction
+    plot.show_arrows(RA_pos[0] - 1.5 * dra,
+                     DEC_pos[0] - 1.5 * ddec,
+                     dra,
+                     ddec,
+                     layer='direction_begin',
+                     edgecolor='r',
+                     facecolor='None',
+                     width=3,
+                     head_width=8,
+                     head_length=6)
+
+    # plot the arrow at the end time to show the direction
+    plot.show_arrows(RA_pos[-1] + dra / 2.0,
+                     DEC_pos[-1] + ddec / 2.0,
+                     dra,
+                     ddec,
+                     layer='direction_end',
+                     edgecolor='r',
+                     facecolor='None',
+                     width=3,
+                     head_width=8,
+                     head_length=6)
+
+    # add the start time label
+    plot.add_label(RA_pos[0] - 0.002,
+                   DEC_pos[0],
+                   startTime.replace('T', ' '),
+                   relative=False,
+                   size='8',
+                   horizontalalignment='left',
+                   color=(0, 0, 1))
+
+    # add the end time label
+    plot.add_label(RA_pos[-1] - 0.002,
+                   DEC_pos[-1],
+                   endTime.replace('T', ' '),
+                   relative=False,
+                   size='8',
+                   horizontalalignment='left',
+                   color=(0, 0, 1))
+
+    return plot
+
+
 # set up basic plot
 def init_plot(hdu, imserver, title, ra, dec, pa):
     servname = {}
@@ -133,19 +254,34 @@ def init_plot(hdu, imserver, title, ra, dec, pa):
     plot.set_theme('publication')
     sys.stdout = out
 
-    plot.add_label(0.95, -0.05, "PA = %.1f" % pa,
-                   relative=True, style='italic', weight='bold')
+    plot.add_label(0.95,
+                   -0.05,
+                   "PA = %.1f" % pa,
+                   relative=True,
+                   style='italic',
+                   weight='bold')
 
-    plot.add_label(0.5, 1.03, title,
-                   relative=True, style='italic', weight='bold', size='large')
-    plot.add_label(-0.05, -0.05, "%s" % servname[imserver],
-                   relative=True, style='italic', weight='bold')
+    plot.add_label(0.5,
+                   1.03,
+                   title,
+                   relative=True,
+                   style='italic',
+                   weight='bold',
+                   size='large')
+    plot.add_label(-0.05,
+                   -0.05,
+                   "%s" % servname[imserver],
+                   relative=True,
+                   style='italic',
+                   weight='bold')
 
     plot.add_grid()
     plot.grid.set_alpha(0.2)
     plot.grid.set_color('b')
 
-    plot.show_circles([ra, ra], [dec, dec], [4.0 / 60.0, 5.0 / 60.0],
+    plot.show_circles([ra, ra],
+                      [dec, dec],
+                      [4.0 / 60.0, 5.0 / 60.0],
                       edgecolor='g')
     plot.add_label(0.79,
                    0.79,

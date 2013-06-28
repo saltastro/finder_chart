@@ -1,16 +1,13 @@
 #!/home/tim/pyTEP/bin/python
+# -*- coding: utf-8 -*-
 
 import cgi
 import cgitb
 import cStringIO
 import os
 import sys
-import traceback
 import xml
-import base64
-import urllib2
 import xml.dom.minidom
-import pyfits
 import ephem
 import numpy as np
 
@@ -25,7 +22,6 @@ os.environ['HOME'] = mpl_homedir
 import matplotlib
 matplotlib.use('Agg')
 
-import aplpy
 import finder_chart as finder
 
 form = cgi.FieldStorage()
@@ -65,12 +61,24 @@ def generate_finder_chart():
         pi_email = parameters["PI"]
         barcode = "Mask #%s" % parameters["MASKNUM"]
         title = "%s (%s; %s)" % (barcode, propcode, pi_email)
+
+    elif mode == "ns":
+        if "txt" in form:
+            ephemfilename = form["txt"]
+            startTime = form.getvalue("start_time")
+            endTime = form.getvalue("end_time")
+            ra, dec, RA_pos, DEC_pos = finder.read_ephem(ephemfilename,
+                                                         startTime,
+                                                         endTime)
+        else:
+            raise Exception("Please specify an Ephem file.")
+
     else:
         propid = form.getvalue("prop")
         pi_name = form.getvalue("pi")
         obj = form.getvalue("objname")
-        ra = 180.0*ephem.hours(form.getvalue("ra"))/np.pi
-        dec = ephem.degrees(form.getvalue("dec"))*180.0/np.pi
+        ra = 180.0 * ephem.hours(form.getvalue("ra")) / np.pi
+        dec = ephem.degrees(form.getvalue("dec")) * 180.0 / np.pi
         pa = float(form.getvalue("pa"))
         title = "%s (%s; %s)" % (obj, propid, pi_name)
 
@@ -84,28 +92,28 @@ def generate_finder_chart():
     if mode == "mos":
         plot = finder.mos_plot(plot, slits, refs, pa)
 
+    if mode == 'ns':
+        plot = finder.plot_ephem(plot, RA_pos, DEC_pos, startTime, endTime)
+
     if mode == "ls":
         plot = finder.draw_line(plot, pa, 8.0, ra, dec, color='r',
                                 linewidth=3, alpha=0.5)
-        plot = finder.draw_box(plot, 0.0, 4.9, 4.9, ra, dec, color='g')
-        plot.add_label(0.75,
-                       0.5,
-                       "BCAM",
-                       relative=True,
-                       style='italic',
-                       weight='bold',
-                       size='large',
-                       horizontalalignment='left',
-                       color=(0, 0, 1))
 
     if mode == "slot":
-        plot = finder.draw_box(plot, pa+90, 2.0/6.0, 10.0, ra, dec, color='r',
-                               linewidth=2, alpha=0.5)
+        plot = finder.draw_box(plot,
+                               pa + 90,
+                               2.0 / 6.0,
+                               10.0,
+                               ra,
+                               dec,
+                               color='r',
+                               linewidth=2,
+                               alpha=0.5)
 
     if mode == "im":
-        plot.show_circles([ra], [dec], [1.7/60.0], edgecolor='r')
-        plot.add_label(0.63,
-                       0.63,
+        plot.show_circles([ra], [dec], [0.8 / 60.0], edgecolor='r')
+        plot.add_label(0.57,
+                       0.57,
                        "BVIT",
                        relative=True,
                        style='italic',
